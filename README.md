@@ -1,8 +1,8 @@
 # Docker Deploy Webhook
 
-A web service for automated deployment of releases from Docker Hub to a Docker Swarm, triggered by a Docker Hub webhook (which can in turn be triggred by pushing to GitHub).
+A fork from [original contributor](https://github.com/iaincollins/docker-deploy-webhook). All credits go to the original authors.
 
-<img width="1526" alt="screen shot 2018-02-02 at 18 55 18" src="https://user-images.githubusercontent.com/595695/35750202-1efdaa5a-084c-11e8-8c7d-2b4fc0deb3c3.png">
+A web service for automated deployment of releases from Docker Hub to a Docker Swarm, triggered by a Docker Hub webhook (which can in turn be triggred by pushing to GitHub).
 
 Flow for automated deployment:
 

@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+
+  paper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: finclab/docker-deploy-webhook:latest
+    ports:
+      - "${docker_deploy_webhook_paper_port}:3000"
+    environment:
+      - PORT="3000"
+      - CONFIG="paper"
+      - TOKEN=${docker_deploy_webhook_paper_token}
+      - USERNAME="${dockerhub_username}"
+      - PASSWORD="${dockerhub_password}"
+    deploy:
+      placement:
+        constraints:
+          - "node.role==manager"
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    networks:
+      - lab
+
+  prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: finclab/docker-deploy-webhook:latest
+    ports:
+      - "${docker_deploy_webhook_prod_port}:3000"
+    environment:
+      - PORT="3000"
+      - CONFIG="prod"
+      - TOKEN=${docker_deploy_webhook_prod_token}
+      - USERNAME="${dockerhub_username}"
+      - PASSWORD="${dockerhub_password}"
+    deploy:
+      placement:
+        constraints:
+          - "node.role==manager"
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    networks:
+      - lab
+
+networks:
+  lab:
