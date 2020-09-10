@@ -16,7 +16,7 @@ rebuild:
 	$(MAKE) push
 	$(MAKE) stop
 	$(MAKE) start
-	$(MAKE) test
+	# $(MAKE) test
 
 start2:
 	# TODO: Have the docker-compose fixed. Not working -- not sure why.
@@ -25,6 +25,25 @@ start2:
 start:
 	$(MAKE) start_paper
 	$(MAKE) start_prod
+
+t:
+	curl -v -H "Content-Type: application/json" --data "{ \"push_data\": { \"tag\": \"latest\" }, \"repository\": { \"repo_name\": \"docker.pkg.github.com/inteclab/datastore/timescaledb\" }}" http://localhost:3000/webhook/12345
+
+test1:
+	# Launch the paper service
+	docker service create \
+	--name ${module}_paper2 \
+	--with-registry-auth \
+	--constraint "node.role==manager" \
+	--publish=20501:3000 \
+	--mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
+	-e PORT="3000" \
+	-e CONFIG="paper" \
+	-e TOKEN=$${docker_deploy_webhook_paper_token} \
+	-e REGISTRY="docker.pkg.github.com" \
+	-e USERNAME="$${github_username}" \
+	-e PASSWORD="$${github_access_token}" \
+    finclab/docker-deploy-webhook:latest
 
 start_paper:
 	# Launch the paper service
@@ -37,8 +56,9 @@ start_paper:
 	-e PORT="3000" \
 	-e CONFIG="paper" \
 	-e TOKEN=${docker_deploy_webhook_paper_token} \
-	-e USERNAME="$${dockerhub_username}" \
-	-e PASSWORD="$${dockerhub_password}" \
+	-e REGISTRY="docker.pkg.github.com" \
+	-e USERNAME="$${github_username}" \
+	-e PASSWORD="$${github_access_token}" \
     finclab/docker-deploy-webhook:latest
 
 start_prod:
@@ -52,8 +72,9 @@ start_prod:
 	-e PORT="3000" \
 	-e CONFIG="prod" \
 	-e TOKEN=${docker_deploy_webhook_prod_token} \
-	-e USERNAME="$${dockerhub_username}" \
-	-e PASSWORD="$${dockerhub_password}" \
+	-e REGISTRY="docker.pkg.github.com" \
+	-e USERNAME="$${github_username}" \
+	-e PASSWORD="$${github_access_token}" \
     finclab/docker-deploy-webhook:latest
 
 stop:
@@ -77,10 +98,11 @@ test:
 	$(MAKE) test_prod
 
 test_prod:
-	curl -v -H "Content-Type: application/json" --data @payload.json  http://${docker_deploy_webhook_prod_url}:${docker_deploy_webhook_prod_port}/webhook/${docker_deploy_webhook_prod_token}
+	# curl -v -H "Content-Type: application/json" --data "{ \"push_data\": { \"tag\": \"prod\" }, \"repository\": { \"repo_name\": \"docker.pkg.github.com/inteclab/datastore/timescaledb\" }}" http://${docker_deploy_webhook_prod_url}:${docker_deploy_webhook_prod_port}/webhook/${docker_deploy_webhook_prod_token}
+	curl -v -H "Content-Type: application/json" --data "{ \"push_data\": { \"tag\": \"prod\" }, \"repository\": { \"repo_name\": \"docker.pkg.github.com/inteclab/datalab/databot\" }}" http://${docker_deploy_webhook_prod_url}:${docker_deploy_webhook_prod_port}/webhook/${docker_deploy_webhook_prod_token}
 
 test_paper:
-	curl -v -H "Content-Type: application/json" --data @payload.json  http://${docker_deploy_webhook_paper_url}:${docker_deploy_webhook_paper_port}/webhook/${docker_deploy_webhook_paper_token}
+	curl -v -H "Content-Type: application/json" --data "{ \"push_data\": { \"tag\": \"latest\" }, \"repository\": { \"repo_name\": \"docker.pkg.github.com/inteclab/datastore/timescaledb\" }}" http://${docker_deploy_webhook_paper_url}:${docker_deploy_webhook_paper_port}/webhook/${docker_deploy_webhook_paper_token}
 
 build:
 	@docker build . --file Dockerfile --tag image

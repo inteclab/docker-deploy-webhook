@@ -46,7 +46,7 @@ app.post('/webhook/:token', (req, res) => {
 
       // Deploy the image and force a restart of the associated service
       console.log(`Deploying ${image} to ${service}…`)
-      child_process.exec(`${dockerCommand} service update ${service} --force --with-registry-auth --image=${image}`,
+      child_process.exec(`${dockerCommand} service update ${service} --force --update-parallelism 1 --update-delay 60s --with-registry-auth --image=${image}`,
         (error, stdout, stderr) => {
         if (error) {
           console.error(`Failed to deploy ${image} to ${service}!`)

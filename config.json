@@ -1,15 +1,30 @@
 {
   "paper": {
-    "nginx:latest": {
-      "service": "nginx"
+    "docker.pkg.github.com/inteclab/datastore/timescaledb:latest": {
+      "service": "datastore_paper_timescaledb"
+    },
+    "docker.pkg.github.com/inteclab/tickstore/marketstore:latest": {
+      "service": "tickstore_paper_marketstore"
+    },
+    "docker.pkg.github.com/inteclab/docstore/mongodb:latest": {
+      "service": "docstore_paper_mongodb"
+    },
+    "docker.pkg.github.com/inteclab/datalab/databot:latest": {
+      "service": "datalab_paper_databot"
     }
   },
   "prod": {
-    "nginx:1.18.0": {
-      "service": "nginx"
+    "docker.pkg.github.com/inteclab/datastore/timescaledb:prod": {
+      "service": "datastore_prod_timescaledb"
     },
-    "my-org/my-other-repo:development": {
-      "service": "my-other-docker-service"
+    "docker.pkg.github.com/inteclab/tickstore/marketstore:prod": {
+      "service": "tickstore_prod_marketstore"
+    },
+    "docker.pkg.github.com/inteclab/docstore/mongodb:prod": {
+      "service": "docstore_prod_mongodb"
+    },
+    "docker.pkg.github.com/inteclab/datalab/databot:prod": {
+      "service": "datalab_prod_databot"
     }
   }
 }
