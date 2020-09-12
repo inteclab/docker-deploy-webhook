@@ -26,25 +26,6 @@ start:
 	$(MAKE) start_paper
 	$(MAKE) start_prod
 
-t:
-	curl -v -H "Content-Type: application/json" --data "{ \"push_data\": { \"tag\": \"latest\" }, \"repository\": { \"repo_name\": \"docker.pkg.github.com/inteclab/datastore/timescaledb\" }}" http://localhost:3000/webhook/12345
-
-test1:
-	# Launch the paper service
-	docker service create \
-	--name ${module}_paper2 \
-	--with-registry-auth \
-	--constraint "node.role==manager" \
-	--publish=20501:3000 \
-	--mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
-	-e PORT="3000" \
-	-e CONFIG="paper" \
-	-e TOKEN=$${docker_deploy_webhook_paper_token} \
-	-e REGISTRY="docker.pkg.github.com" \
-	-e USERNAME="$${github_username}" \
-	-e PASSWORD="$${github_access_token}" \
-    finclab/docker-deploy-webhook:latest
-
 start_paper:
 	# Launch the paper service
 	@docker service create \
@@ -59,7 +40,7 @@ start_paper:
 	-e REGISTRY="docker.pkg.github.com" \
 	-e USERNAME="$${github_username}" \
 	-e PASSWORD="$${github_access_token}" \
-    finclab/docker-deploy-webhook:latest
+	docker.pkg.github.com/inteclab/docker-deploy-webhook/docker-deploy-webhook:latest
 
 start_prod:
 	# Launch the prod service
@@ -75,7 +56,7 @@ start_prod:
 	-e REGISTRY="docker.pkg.github.com" \
 	-e USERNAME="$${github_username}" \
 	-e PASSWORD="$${github_access_token}" \
-    finclab/docker-deploy-webhook:latest
+	docker.pkg.github.com/inteclab/docker-deploy-webhook/docker-deploy-webhook:latest
 
 stop:
 	$(MAKE) stop_paper
@@ -105,11 +86,11 @@ test_paper:
 	curl -v -H "Content-Type: application/json" --data "{ \"push_data\": { \"tag\": \"latest\" }, \"repository\": { \"repo_name\": \"docker.pkg.github.com/inteclab/datastore/timescaledb\" }}" http://${docker_deploy_webhook_paper_url}:${docker_deploy_webhook_paper_port}/webhook/${docker_deploy_webhook_paper_token}
 
 build:
-	@docker build . --file Dockerfile --tag image
-	@docker tag image finclab/docker-deploy-webhook:latest
+	@docker build . --file Dockerfile --tag docker-deploy-webhook:latest
+	@docker tag docker-deploy-webhook:latest docker.pkg.github.com/inteclab/docker-deploy-webhook/docker-deploy-webhook:latest
 
 push:
-	@docker push finclab/docker-deploy-webhook:latest
+	@docker push docker.pkg.github.com/inteclab/docker-deploy-webhook/docker-deploy-webhook:latest
 
 deploy_old_nginx:
 	@docker service create \
