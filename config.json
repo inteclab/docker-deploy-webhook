@@ -9,7 +9,7 @@
     "docker.pkg.github.com/inteclab/docstore/mongodb:latest": {
       "service": "paper_docstore_mongodb"
     },
-    "docker.pkg.github.com/inteclab/datalab/databot:latest": {
+    "docker.pkg.github.com/inteclab/datalab/datalab:latest": {
       "service": "paper_datalab_databot"
     }
   },
@@ -23,7 +23,7 @@
     "docker.pkg.github.com/inteclab/docstore/mongodb:prod": {
       "service": "prod_docstore_mongodb"
     },
-    "docker.pkg.github.com/inteclab/datalab/databot:prod": {
+    "docker.pkg.github.com/inteclab/datalab/datalab:prod": {
       "service": "prod_datalab_databot"
     },
     "docker.pkg.github.com/inteclab/scheduler/ofelia:prod": {
