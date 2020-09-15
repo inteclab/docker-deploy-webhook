@@ -51,9 +51,12 @@ rebuild:
 	# $(MAKE) test
 
 restart:
-	$(MAKE) stop
-	sleep 20
-	$(MAKE) start
+	# Restart both prod and paper
+	docker service rm prod_${stack}_${service}
+	docker service rm paper_${stack}_${service}
+	sleep 3
+	$(MAKE) start_paper labenv=paper
+	$(MAKE) start_prod labenv=prod
 
 start:
 	@echo "\n${title_style}Starting ${stack} (${labenv}) Service (${service})...${no_style}\n"
@@ -126,7 +129,7 @@ start_paper:
 	@echo "\n${title_style}Deploying ${stack} to Swarm...${no_style}\n"
 	# Launch the paper service
 	@docker service create \
-    --name ${labenv}_${stack} \
+    --name ${labenv}_${stack}_${service} \
 	--with-registry-auth \
 	--constraint "node.role==manager" \
 	--publish=${docker_deploy_webhook_paper_port}:3000 \
@@ -137,13 +140,13 @@ start_paper:
 	-e REGISTRY="docker.pkg.github.com" \
 	-e USERNAME="$${github_username}" \
 	-e PASSWORD="$${github_access_token}" \
-	docker.pkg.github.com/inteclab/docker-deploy-webhook/docker-deploy-webhook:latest
+	docker.pkg.github.com/inteclab/docker-deploy-webhook/docker_deploy:latest
 
 start_prod:
 	@echo "\n${title_style}Deploying ${stack} to Swarm...${no_style}\n"
 	# Launch the prod service
 	@docker service create \
-    --name ${labenv}_${stack} \
+    --name ${labenv}_${stack}_${service} \
 	--with-registry-auth \
 	--constraint "node.role==manager" \
 	--publish=${docker_deploy_webhook_prod_port}:3000 \
@@ -154,23 +157,23 @@ start_prod:
 	-e REGISTRY="docker.pkg.github.com" \
 	-e USERNAME="$${github_username}" \
 	-e PASSWORD="$${github_access_token}" \
-	docker.pkg.github.com/inteclab/docker-deploy-webhook/docker-deploy-webhook:latest
+	docker.pkg.github.com/inteclab/docker-deploy-webhook/docker_deploy:prod
 
 stop_swarm_service:
 	# Stop the service in Docker Swarm, service name: i.e. datalab_prod_datalab
 	# Syntax: make stop_swarm_service labenv=prod
 	@echo "\n${title_style}Removing ${stack} (${labenv}) Service from Docker Swarm...${no_style}\n"
-	docker stack rm ${labenv}_${stack}
+	docker stack rm ${labenv}_${stack}_${service}
 
 shell:
 	@${docker_exec_cmd} /bin/bash
 
 exec:
-	# Syntax: make exec labenv=prod cmd="touch /tmp/example" 
+	# Syntax: make exec labenv=prod cmd="touch /tmp/example"
 	@${docker_exec_cmd} ${cmd}
 
 log:
-	@docker container logs datalab_${labenv}_databot
+	@docker service logs ${labenv}_${stack}_${service} -f
 
 #shell_paper:
 #	@docker exec -ti ${stack}_paper.1.$$(docker service ps -f 'name=${stack}_paper.1' ${stack}_paper -q --no-trunc | head -n1) /bin/sh

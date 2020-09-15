@@ -30,7 +30,7 @@ app.post('/webhook/:token', (req, res) => {
   }
 
   // Send response back right away if token was valid
-  res.send('OK')
+  res.send('Great! Webhook has received a valid token...')
 
   const payload = req.body
   const image = `${payload.repository.repo_name}:${payload.push_data.tag}`
