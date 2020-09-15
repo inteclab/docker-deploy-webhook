@@ -27,7 +27,7 @@
       "service": "prod_datalab_databot"
     },
     "docker.pkg.github.com/inteclab/scheduler/scheduler:prod": {
-      "service": "prod_scheduler_ofelia"
+      "service": "prod_labenv_scheduler"
     }
   }
 }
