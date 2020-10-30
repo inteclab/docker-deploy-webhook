@@ -163,7 +163,8 @@ stop_swarm_service:
 	# Stop the service in Docker Swarm, service name: i.e. datalab_prod_datalab
 	# Syntax: make stop_swarm_service labenv=prod
 	@echo "\n${title_style}Removing ${stack} (${labenv}) Service from Docker Swarm...${no_style}\n"
-	docker stack rm ${labenv}_${stack}_${service}
+	docker stack rm ${labenv}_${stack}_${service} | true
+	docker service rm ${labenv}_${stack}_${service} | true
 
 shell:
 	@${docker_exec_cmd} /bin/bash
